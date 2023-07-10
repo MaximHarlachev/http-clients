@@ -1,4 +1,4 @@
-package ru.inno.todo.apache;
+package ru.inno.todo.model;
 
 import java.util.Objects;
 
