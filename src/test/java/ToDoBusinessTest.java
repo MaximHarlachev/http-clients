@@ -1,9 +1,9 @@
-import org.junit.jupiter.api.BeforeEach;
+import extentions.ToDoClientProvider;
+import extentions.ToDoProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import ru.inno.todo.ToDoClient;
-import ru.inno.todo.apache.ToDoClientApache;
-import ru.inno.todo.model.CreateToDo;
 import ru.inno.todo.model.ToDoItem;
 
 import java.io.IOException;
@@ -11,24 +11,17 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(ToDoClientProvider.class)
 public class ToDoBusinessTest {
-    ToDoClient client;
-
-    @BeforeEach
-    public void setUp() {
-        client = new ToDoClientApache("https://todo-app-sky.herokuapp.com");
-    }
 
     @Test
     @DisplayName("Проверяем, что задача создается")
-    public void shouldCreateTask() throws IOException {
+    public void shouldCreateTask(ToDoClient client) throws IOException {
         // получить список задач
         List<ToDoItem> listBefore = client.getAll();
         // создать задачу
-        CreateToDo todo = new CreateToDo();
         String title = "My super task";
-        todo.setTitle(title);
-        ToDoItem newItem = client.create(todo);
+        ToDoItem newItem = client.create(title);
 
         // проверить, что задача отображается в списке
         assertFalse(newItem.getUrl().isBlank());
@@ -43,6 +36,37 @@ public class ToDoBusinessTest {
 
         // проверить еще и по id
         ToDoItem single  = client.getById(newItem.getId());
+        assertEquals(title, single.getTitle());
     }
 
+    @Test
+    @ExtendWith(ToDoProvider.class)
+    public void shouldRename(ToDoClient client, ToDoItem created, ToDoItem created1) throws IOException {
+
+        String myNewTitle = "my new title";
+        ToDoItem update = client.renameById(created.getId(), myNewTitle);
+
+        ToDoItem item = client.getById(update.getId());
+
+        assertEquals(myNewTitle, item.getTitle());
+        assertEquals(myNewTitle, update.getTitle());
+        assertEquals(created.getId(), item.getId());
+        assertEquals(created.getUrl(), item.getUrl());
+        assertEquals(created.getOrder(), item.getOrder());
+        assertEquals(created.isCompleted(), item.isCompleted());
+
+        client.deleteById(item.getId());
+    }
+
+//    @Test
+//    @ExtendWith(ToDoListProvider.class)
+//    public void getList10( @ItemList(10) List<ToDoItem> list) {
+//
+//    }
+//
+//    @Test
+//    @ExtendWith(ToDoListProvider.class)
+//    public void getList5( @ItemList(5) List<ToDoItem> list) {
+//
+//    }
 }

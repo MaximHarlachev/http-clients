@@ -1,13 +1,20 @@
 package ru.inno.todo.okhttp3;
 
+import okhttp3.OkHttpClient;
 import ru.inno.todo.ToDoClient;
-import ru.inno.todo.model.CreateToDo;
 import ru.inno.todo.model.ToDoItem;
 
 import java.io.IOException;
 import java.util.List;
 
 public class ToDoClientOkHttp3 implements ToDoClient {
+    private final String URL;
+    private final OkHttpClient client;
+
+    public ToDoClientOkHttp3(String url) {
+        URL = url;
+        client = new OkHttpClient();
+    }
     @Override
     public List<ToDoItem> getAll() throws IOException {
         return null;
@@ -19,7 +26,7 @@ public class ToDoClientOkHttp3 implements ToDoClient {
     }
 
     @Override
-    public ToDoItem create(CreateToDo createToDo) throws IOException {
+    public ToDoItem create(String title) throws IOException {
         return null;
     }
 
